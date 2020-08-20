@@ -16,7 +16,7 @@ public class MainController {
 
 	@GetMapping("/Register")
 	public String registerUser() {
-		System.out.println("returning call from Login user....");
+		System.out.println("returning call from register user....");
 		return "register";
 	}
 

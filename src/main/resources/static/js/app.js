@@ -61,11 +61,33 @@ app.controller("LoginController", function($scope, $http, $rootScope, $window,$l
        
     });
 	}	
+	
+	$scope.register = function(){
+		$scope.userData = [{
+			'firstName':$scope.firstname,
+			'lastName':$scope.lastname,
+	        'userName': $scope.username,
+	        'password': $scope.password
+	    }];
+		 $scope.displayErrorMsg = false;
+		 $scope.displaySuccessMsg = false;
+		 $http.post("https://localhost:8000/service/registration", $scope.userData).then(function(response) {
+			 if(response.status == "201"){
+				 $scope.displaySuccessMsg = true;				 
+			 }
+			 else{
+				 $scope.displayErrorMsg = true;
+			 }
+			 
+		 });
+		 $location.path('/Register');
+	}
+	
 });
 
 
 
-var app = angular.module("Search", ['ui.bootstrap']).controller("SearchController",function($scope, $http,$window) {  
+var app = angular.module("Search", ['ui.bootstrap']).controller("SearchController",function($scope, $http,$window,$location) {  
 //app.controller("SearchController",function($scope, $http, Scopes) {    // it's for default check box thing...
 
 	$scope.isAdmin = $window.sessionStorage.getItem('isAdmin');
@@ -360,6 +382,9 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         $scope.bookCart.splice();
 
     };
+    $scope.logout = function(){
+    	 $window.location.href = '/Login';
+	  };
 
 });
 
