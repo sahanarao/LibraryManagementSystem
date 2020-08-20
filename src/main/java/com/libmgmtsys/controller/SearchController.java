@@ -1,5 +1,16 @@
 package com.libmgmtsys.controller;
 
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.libmgmtsys.model.Book;
 import com.libmgmtsys.model.Borrow;
 import com.libmgmtsys.repository.BookRepository;
@@ -7,19 +18,11 @@ import com.libmgmtsys.repository.BorrowRepository;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
 @Api(value = "searchController", description = "This enpoints returns books, makesBooking, cancellation")
-public class LibmgmtsysController {
+public class SearchController {
 
     @Autowired
     private BookRepository bookRepository;
@@ -35,12 +38,23 @@ public class LibmgmtsysController {
         return li;
     }
 
-    @RequestMapping(value = "/getBorrowDetails", method = RequestMethod.GET,
+    @RequestMapping(value = "/getBorrowDetails", method = RequestMethod.POST,
             produces = "application/json")
     @ApiOperation(value = "to get total number of books borrowed", response = List.class)
-    public List<Borrow> getBookingDetails() {
-        List<Borrow> li = new ArrayList<Borrow>();
-        borrowRepository.findAll().forEach(li::add);
+    public List<Borrow> getBookingDetails(@RequestBody String userId) {
+    	System.out.println("getBorrowDetails:"+userId);
+        List<Borrow> li = new ArrayList<Borrow>();        
+        List<Object[]> res =borrowRepository.findByUSerId(userId);
+		Iterator<Object[]> it = res.iterator();
+		while(it.hasNext()){
+			Borrow borrow = new Borrow();
+			Object[] line = it.next();			
+			borrow.setBorrow_id((String) line[0]);
+			borrow.setbook_id((String) line[1]);
+			borrow.setBooking_date((Date) line[2]);
+			borrow.setQuantity((int) line[3]);
+			li.add(borrow);
+		}
         return li;
     }
 

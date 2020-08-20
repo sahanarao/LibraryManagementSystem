@@ -1,19 +1,77 @@
-var app = angular.module("MyApp", []);
-app.controller("LoginController", function($scope, $http) {
+var app = angular.module("LibMgmtApp", ['ui.bootstrap']);
 
-    $scope.welcomeMessage = "Hey buddy welcome...";
-    $scope.LongMessage = "You have sucessfully integrated Angular with java";
-    console.log("Processed Till here");
-    $http.get('http://localhost:8080/api/getData').
-    then(function(response) {
-        $scope.result = response.data;
+app.run(function ($rootScope) {
+    $rootScope.$on('scope.stored', function (event, data) {
+        console.log("scope.stored", data);
     });
-
 });
 
-var app = angular.module("Search", ['ui.bootstrap']).controller("SearchController",
-    function($scope, $http) {
-    // it's for default check box thing...
+app.factory('Scopes', function ($rootScope) {
+    var mem = {};
+ 
+    return {
+        store: function (key, value) {
+            $rootScope.$emit('scope.stored', key);
+            mem[key] = value;
+        },
+        get: function (key) {
+            return mem[key];
+        }
+    };
+});
+
+app.controller("LoginController", function($scope, $http, $rootScope, $window,$location, Scopes) {		
+	$scope.login = function(){
+		$scope.userData = [{
+	        'userName': $scope.username,
+	        'password': $scope.password
+	    }];
+		 $scope.displayError = false;
+		var isAdmin = false;
+		var isUser = false;
+		var userId = '';
+		var role ='';
+		$http.post("https://localhost:8000/login", $scope.userData).then(function(response) {
+        $scope.result = response.data;
+        if(response.data){
+        	angular.forEach(response.data, function (value, key) {                
+                role = value.role;
+                userId = value.id;
+                alert(role);
+            });
+        	if(role === "ADMIN"){
+        		isAdmin = true;
+        	}
+        	if(role === "USER"){
+        		isUser = true;        		
+        	}
+        	
+        	if(!role){        		
+        		$scope.displayError = true;
+        		$location.path('/Login');
+        	}
+        	else{
+        		$window.sessionStorage.setItem('isAdmin',isAdmin);
+        		$window.sessionStorage.setItem('isUser',isUser);
+        		$window.sessionStorage.setItem('userId',userId);
+        		 $window.location.href = '/search';
+        	}
+        	
+        }
+       
+    });
+	}	
+});
+
+
+
+var app = angular.module("Search", ['ui.bootstrap']).controller("SearchController",function($scope, $http,$window) {  
+//app.controller("SearchController",function($scope, $http, Scopes) {    // it's for default check box thing...
+
+	$scope.isAdmin = $window.sessionStorage.getItem('isAdmin');
+	$scope.isUser = $window.sessionStorage.getItem('isUser');
+	$scope.userId = $window.sessionStorage.getItem('userId');
+	alert($scope.userId);
     $scope.books = "getBooks";
     $scope.rounds = 5;
     $scope.getBooks = "Search all Book Details";
@@ -33,7 +91,8 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         'borrow_id': "",
         'book_id': "book_id",
         'booking_date': "",
-        'quantity': "quantity"
+        'quantity': "quantity",
+        'user_id':""
     };
     $scope.cancelCart;
     $scope.search = function() {
@@ -51,7 +110,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         // Pagination Logic
         if (choice == 'getBooks') {
             $scope.searchBook = true;
-            var url = 'http://localhost:8080/api/' + choice;
+            var url = 'https://localhost:8443/api/' + choice;
             $http.get(url).
             then(function(response) {
                 $scope.output = response.data;
@@ -79,17 +138,18 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
         } else {
             $scope.searchBook = true;
-            var url = 'http://localhost:8080/api/' + choice;
+            var url = 'https://localhost:8443/api/' + choice;
             $http.get(url).
             then(function(response) {
                 $scope.output = response.data;
             });
         }
     }
+ 
 
     $scope.addRow = function() {
         console.log($scope.bookCart);
-        $http.post("http://localhost:8080/api/addBook", $scope.bookCart).then(function(response) {
+        $http.post("https://localhost:8443/api/addBook", $scope.bookCart).then(function(response) {
             if (response.status == "200") {
                 $scope.addBookFlag = false;
                 $scope.displayError = false;
@@ -137,7 +197,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
     function loadBooks() {
 
-        $http.get('http://localhost:8080/api/getBooks').
+        $http.get('https://localhost:8443/api/getBooks').
         then(function(response) {
             $scope.bookCache = response.data;
             paginationDel();
@@ -148,8 +208,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
     }
 
     function loadBookedThings() {
-
-        $http.get('http://localhost:8080/api/getBorrowDetails').
+        $http.post('https://localhost:8443/api/getBorrowDetails',$scope.userId).
         then(function(response) {
             $scope.cancelCache = response.data;
             paginationBooking();
@@ -197,7 +256,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
     function searchBooks() {
 
-        $http.get('http://localhost:8080/api/getBooks').
+        $http.get('https://localhost:8443/api/getBooks').
         then(function(response) {
             $scope.bookCache = response.data;
             paginationDel();
@@ -218,9 +277,10 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         $scope.orderCart.book_id = bcache.book_id;
         $scope.orderCart.quantity = bcache.pages;
         $scope.orderCart.booking_date = new Date();
+        $scope.orderCart.user_id = $scope.userId;
 
         //
-        $http.post("http://localhost:8080/api/borrowbooks", $scope.orderCart).then(function(response) {
+        $http.post("https://localhost:8443/api/borrowbooks", $scope.orderCart).then(function(response) {
             if (response.status == "200") {
                 $scope.displayError = false;
                 $scope.displayBookingSucess = true;
@@ -246,7 +306,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
         alert(bcache.borrow_id);
         //
-        $http.post("http://localhost:8080/api/cancelBorrowing", $scope.cancelCart).then(function(response) {
+        $http.post("https://localhost:8443/api/cancelBorrowing", $scope.cancelCart).then(function(response) {
             if (response.status == "200") {
                 $scope.displayError = false;
                 $scope.displayCancelSucess = true;
@@ -271,7 +331,7 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         });
 
         // alert(JSON.stringify($scope.delCart));
-        $http.post('http://localhost:8080/api/delBook/', $scope.delCart).
+        $http.post('https://localhost:8443/api/delBook/', $scope.delCart).
         then
             (function(response) {
 
@@ -302,3 +362,4 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
     };
 
 });
+

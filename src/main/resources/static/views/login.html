@@ -1,0 +1,55 @@
+﻿<html><head>
+<script src="/js/angular.js"></script>
+    <script src="/js/app.js"></script>
+  <!--   <script src="/js/login.js"></script>-->
+    <script src="/js/jquery-1.11.2.min.js"></script>
+    <script data-require="ui-bootstrap@*" data-semver="0.12.1"
+            src="/js/ui-bootstrap-tpls-0.12.1.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/my.css">-
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+</head>
+<body ng-app="LibMgmtApp">
+<div ng-controller="LoginController">
+<div style="border: 3px solid red; background-color:yellow;" >
+    <H1 align="center">Library Management System</H1>
+</div>
+<div align="center" style="border: 3px solid black; width:500px">
+    <h2>Login</h2>
+    <form name="form" ng-submit="login(bcache)" role="form">
+        <div>
+            <label for="username">Username</label>
+            <input type="text" name="username" id="username" ng-model="username" required />
+            <span ng-show="form.username.$dirty && form.username.$error.required">Username is required</span>
+        </div>
+        <div>
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" ng-model="password" required />
+            <span ng-show="form.password.$dirty && form.password.$error.required">Password is required</span>
+        </div>
+        <div class="form-actions">
+            <button type="submit" ng-disabled="form.$invalid || vm.dataLoading">Login</button>
+        </div>
+    </form>  
+</div>
+
+ <div ng-show="displayError">
+        <h3>Either Username or password is incorrect..Please try again</h3>
+    </div>
+<table id="booktable" cellpadding="2" cellspacing="1" border="1"
+           ng-show="showSearch">
+
+        <tr style="background-color: lightgrey">
+            <td>User Id</td>
+            <td>Role</td>
+        </tr>
+
+        <tr ng-repeat="user in result">
+            <td>{{user.id}}</td>
+            <td>{{user.role}}</td>
+        </tr>
+    </table>
+</div>
+
+
+</body>
+</html>

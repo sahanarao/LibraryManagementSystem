@@ -53,9 +53,9 @@ CREATE TABLE `book_author` (
 
 /*Table structure for table `borrower` */
 
-DROP TABLE IF EXISTS `borrower`;
+DROP TABLE IF EXISTS `user`;
 
-CREATE TABLE `borrower` (
+CREATE TABLE `user` (
   `lib_card_id` int(10) NOT NULL AUTO_INCREMENT,
   `bname` varchar(100) NOT NULL,
   `address` varchar(100) NOT NULL,
@@ -79,14 +79,16 @@ insert  into `hibernate_sequence`(`next_val`) values (1);
 
 /*Table structure for table `order_details` */
 
-DROP TABLE IF EXISTS `borrow_details`;
+DROP TABLE IF EXISTS libmgmtsys.`borrow_details`;
 
-CREATE TABLE `borrow_details` (
+CREATE TABLE libmgmtsys.`borrow_details` (
   `borrow_id` varchar(80) NOT NULL,
   `book_id` varchar(10) NOT NULL,
   `booking_date` date NOT NULL,
+  `user_id` varchar(20) NOT NULL,
   `quantity` varchar(20) NOT NULL,
-  PRIMARY KEY (`borrow_id`,`book_id`,`booking_date`)
+  PRIMARY KEY (`borrow_id`,`book_id`,`booking_date`,`user_id`),
+   CONSTRAINT `user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user_details` (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Data for the table `order_details` */

@@ -15,64 +15,77 @@ import org.hibernate.annotations.GenericGenerator;
 @Table(name = "borrow_details")
 public class Borrow implements Serializable {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-  @Id @GeneratedValue(generator="system-uuid")
-  @GenericGenerator(name="system-uuid", strategy = "uuid")
-  @Column(name = "borrow_id")
-  private String borrow_id;  
-  
-  @Column(name = "book_id")
-  private String book_id;
-  
-  @Column(name = "booking_date")
-  private Date booking_date;
+	@Id @GeneratedValue(generator="system-uuid")
+	@GenericGenerator(name="system-uuid", strategy = "uuid")
+	@Column(name = "borrow_id")
+	private String borrow_id;  
 
-  @Override
-  public String toString() {
-    return "Borrow_Details [borrow_id=" + borrow_id + ", book_id=" + book_id + ", booking_date=" + booking_date
-        + ", quantity=" + quantity + "]";
-  }
+	@Column(name = "book_id")
+	private String book_id;
 
-  
-  @Column(name = "quantity")
-  private int quantity;
+	@Column(name = "booking_date")
+	private Date booking_date;
 
-  public String getBorrow_id() {
-    return borrow_id;
-  }
+	@Column(name = "user_id")
+	private String user_id;
 
-  public void setBorrow_id(String borrow_id) {
-    this.borrow_id = borrow_id;
-  }
+	@Column(name = "quantity")
+	private int quantity;
 
-  public String getbook_id() {
-    return book_id;
-  }
+	@Override
+	public String toString() {
+		return "Borrow [borrow_id=" + borrow_id + ", book_id=" + book_id + ", booking_date=" + booking_date + ", Id=" + user_id
+				+ ", quantity=" + quantity + "]";
+	}
 
-  public void setbook_id(String book_id) {
-    this.book_id = book_id;
-  }
+	
 
-  public Date getBooking_date() {
-    return booking_date;
-  }
+	public String getUser_id() {
+		return user_id;
+	}
+	public void setUser_id(String user_id) {
+		this.user_id = user_id;
+	}
 
-  public void setBooking_date(Date booking_date) {
-    this.booking_date = booking_date;
-  }
 
-  public int getQuantity() {
-    return quantity;
-  }
 
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
+	public String getBorrow_id() {
+		return borrow_id;
+	}
 
- 
+	public void setBorrow_id(String borrow_id) {
+		this.borrow_id = borrow_id;
+	}
+
+	public String getbook_id() {
+		return book_id;
+	}
+
+	public void setbook_id(String book_id) {
+		this.book_id = book_id;
+	}
+
+	public Date getBooking_date() {
+		return booking_date;
+	}
+
+	public void setBooking_date(Date booking_date) {
+		this.booking_date = booking_date;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+
 
 }

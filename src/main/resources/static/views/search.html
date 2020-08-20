@@ -23,16 +23,16 @@
     </label> <!-- <label class="container">{{count}} <input type="radio"
                                                        name="radio" ng-model="books" value="count"> <span
         class="checkmark"></span>
-</label> --> <label class="container">{{addBook}} <input type="radio"
+</label> --> <label ng-show="isAdmin" class="container">{{addBook}} <input type="radio"
                                                      name="radio" ng-model="books" value="addBook"> <span
         class="checkmark"></span>
-</label> <label class="container">{{delBook}} <input type="radio"
+</label> <label ng-show="isAdmin" class="container">{{delBook}} <input type="radio"
                                                      name="radio" ng-model="books" value="delBook"> <span
         class="checkmark"></span>
-</label> <label class="container">{{borrowBook}} <input type="radio"
+</label> <label ng-show="isUser" class="container">{{borrowBook}} <input type="radio"
                                                         name="radio" ng-model="books" value="borrowBook"> <span
         class="checkmark"></span>
-</label> <label class="container">{{cancelBook}} <input type="radio"
+</label> <label ng-show="isUser" class="container">{{cancelBook}} <input type="radio"
                                                           name="radio" ng-model="books" value="cancelBook"> <span
         class="checkmark"></span>
 </label>
@@ -164,7 +164,7 @@
 
 </div>
 
-
+<div>
 <div class="borrowBook" ng-show="borrowFlag" style="padding-left: 10px">
     <h4 align="center">Pick Your Books..</h4>
     <table id="borrowBooks" cellpadding="1" cellspacing="2" border="1"
@@ -176,7 +176,7 @@
                 <div style="height: 200px; width: 100%;">
                     <label style="padding: 10px;">Book Id Is:{{bcache.book_id}} </label> <br>
                     <label style="padding: 10px;">Title is:{{bcache.title}} </label> <br>
-                    <label style="padding: 10px;">Amount:{{bcache.available}}
+                    <label style="padding: 10px;">Quantity:{{bcache.available}}
                     </label> <br>
                     <div>
                         <button type="button" ng-click="borrowbooks(bcache)"
@@ -198,11 +198,11 @@
     </div>
     <div class="popup" ng-show="displayBookingSucess">
 
-			<span class="popuptext" id="myPopup"><h3>Your Booking is
-					sucessfull</h3></span>
+			<span class="popuptext" id="myPopup"><h3>Your have successfully borrowed the book
+					</h3></span>
     </div>
 </div>
-
+</div>
 <!-- Cancel Booking -->
 
 <div class="cancelBook" ng-show="cancelBorrow"
@@ -215,10 +215,10 @@
 
             <td ng-repeat="bcache in alreadyBooked" align="center">
                 <div style="height: 200px; width: 100%;">
-                    <label style="padding: 10px;">Booking Code:{{bcache.book_id}}
+                    <label style="padding: 10px;">Book Id:{{bcache.book_id}}
                     </label> <br> <label style="padding: 10px;">Booking date
                     is:{{bcache.booking_date}} </label> <br> <label
-                        style="padding: 10px;">Refund Amount:{{bcache.quantity}}
+                        style="padding: 10px;">Quantity:{{bcache.quantity}}
                 </label> <br>
                     <div>
                         <button type="button" ng-click="cancelBorrowing(bcache)"

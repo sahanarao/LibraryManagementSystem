@@ -23,6 +23,7 @@ public class MainController {
 	@GetMapping("/search")
 	public String searchDetails() {
 		// logger.debug("Debug message");
+		System.out.println("In searchDetails");
 
 		return "search";
 	}
