@@ -3,7 +3,8 @@
 This repository consists of service for Library management system. This has been developed using Spring Boot. 
 It calls LibManagementSystem user service for login, fetching the users based on roles and deleting the users.
 
-use cases covered:
+
+Use cases covered:
 1) Login to application
 2) Registering to application
 3) Displaying search options based on Roles(Admin or User)
