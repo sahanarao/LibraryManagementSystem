@@ -85,7 +85,7 @@ CREATE TABLE libmgmtsys.`borrow_details` (
   `borrow_id` varchar(80) NOT NULL,
   `book_id` varchar(10) NOT NULL,
   `booking_date` date NOT NULL,
-  `user_id` varchar(20) NOT NULL,
+  `user_id` BIGINT NOT NULL,
   `quantity` varchar(20) NOT NULL,
   PRIMARY KEY (`borrow_id`,`book_id`,`booking_date`,`user_id`),
    CONSTRAINT `user_id_fk` FOREIGN KEY (`user_id`) REFERENCES `user_details` (`Id`)
