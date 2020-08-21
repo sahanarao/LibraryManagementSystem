@@ -9,11 +9,17 @@ Use cases covered:
 2) Registering to application
 3) Displaying search options based on Roles(Admin or User)
 
-If Admin following are the modules available
+If Admin he/she can avail:
 
 1) Displaying books
 2) Add new books
 3) Remove/delete books
 4) Display users of the application
 5) Delete users
+
+If User he/she can avail:
+
+1) Displaying of books
+2) Borrow books
+3) View borrowed books and cancel borrowed books
 
