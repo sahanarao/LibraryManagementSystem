@@ -37,7 +37,6 @@ app.controller("LoginController", function($scope, $http, $rootScope, $window,$l
         	angular.forEach(response.data, function (value, key) {                
                 role = value.role;
                 userId = value.id;
-                alert(role);
             });
         	if(role === "ADMIN"){
         		isAdmin = true;
@@ -93,7 +92,6 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 	$scope.isAdmin = $window.sessionStorage.getItem('isAdmin');
 	$scope.isUser = $window.sessionStorage.getItem('isUser');
 	$scope.userId = $window.sessionStorage.getItem('userId');
-	alert($scope.userId);
     $scope.books = "getBooks";
     $scope.rounds = 5;
     $scope.getBooks = "Search all Book Details";
@@ -102,6 +100,8 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
     $scope.delBook = "Delete Existing Book";
     $scope.borrowBook = "Borrow Books";
     $scope.cancelBook = "Cancel Borrowed Books";
+    $scope.showUsers = "Display Users";
+    $scope.delUser = "Delete Existing Users";
     $scope.bookCart = [{
         'book_id': '',
         'title': '',
@@ -117,6 +117,13 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         'user_id':""
     };
     $scope.cancelCart;
+    $scope.userCart = [{
+        'id': '',
+        'firstName': '',
+        'lastName': '',
+        'userName': ''
+    }];
+    $scope.delUserCart = [];
     $scope.search = function() {
         var choice = $scope.books;
         $scope.searchBook = false;
@@ -127,6 +134,8 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         $scope.displayError = false;
         $scope.borrowFlag = false;
         $scope.cancelBorrow = false;
+        $scope.showUsersFlag = false;
+        $scope.delUserFlag = false;
         $scope.displayBookingSucess = false;
         $scope.displayCancelSucess = false;
         // Pagination Logic
@@ -157,6 +166,14 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         } else if (choice == 'cancelBook') {
             $scope.cancelBorrow = true;
             loadBookedThings();
+
+        }  else if (choice == 'showUsers') {
+            $scope.showUsersFlag = true;
+            getUsers();
+
+        }  else if (choice == 'delUser') {
+            $scope.delUserFlag = true;
+            getUsers();
 
         } else {
             $scope.searchBook = true;
@@ -275,6 +292,12 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
         $scope.delCart = [];
 
     }
+    
+    function clearUserCart() {
+        $scope.delUserCart = [];
+
+    }
+
 
     function searchBooks() {
 
@@ -286,6 +309,19 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
 
     }
+    
+    function getUsers() {
+
+    	var url = 'https://localhost:8000/service/users';
+        $http.get(url).
+        then(function(response) {
+            $scope.useroutput = response.data;
+            paginationDel();
+        });
+
+    }   
+   
+    
     $scope.addRows = function($event) {
         $scope.bookCart.push({});
     };
@@ -325,8 +361,6 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
     	
 
         $scope.cancelCart = bcache.borrow_id;
-
-        alert(bcache.borrow_id);
         //
         $http.post("https://localhost:8443/api/cancelBorrowing", $scope.cancelCart).then(function(response) {
             if (response.status == "200") {
@@ -372,11 +406,38 @@ var app = angular.module("Search", ['ui.bootstrap']).controller("SearchControlle
 
             $scope.displayError = true;
         });
-
-
-
-
     }
+    
+    $scope.deleteUsers = function(usercache) {
+
+        angular.forEach($scope.useroutput, function(sel) {
+            if (sel.selected) {
+                $scope.delUserCart.push(sel);
+            }
+        });
+
+        // alert(JSON.stringify($scope.delCart));
+        $http.post('https://localhost:8000/service/delete', $scope.delUserCart).
+        then
+            (function(response) {
+
+                if (response.status == "200") {                    
+                    $scope.displayError = false;
+                    $scope.displayStandardMessage = true;
+                    clearUserCart();
+                    getUsers();
+                } else {
+                    $scope.displayError = true;
+                }
+            }).
+        catch(function(response) {
+
+            $scope.displayError = true;
+        });
+    }
+    
+    
+    
     $scope.removeRows = function(user) {
 
         $scope.bookCart.splice();

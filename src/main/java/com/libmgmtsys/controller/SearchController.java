@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +25,8 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/api")
 @Api(value = "searchController", description = "This enpoints returns books, makesBooking, cancellation")
 public class SearchController {
-
+	private static final Logger logger = LoggerFactory.getLogger(SearchController.class);
+	
     @Autowired
     private BookRepository bookRepository;
     @Autowired
@@ -33,6 +36,7 @@ public class SearchController {
     @RequestMapping(value = "/getBooks", method = RequestMethod.GET, produces = "application/json")
     @ApiOperation(value = "to get total number of books in library", response = List.class)
     public List<Book> getBooks() {
+    	logger.info("Get Books");
         List<Book> li = new ArrayList<Book>();
         bookRepository.findAll().forEach(li::add);
         return li;
@@ -42,7 +46,7 @@ public class SearchController {
             produces = "application/json")
     @ApiOperation(value = "to get total number of books borrowed", response = List.class)
     public List<Borrow> getBookingDetails(@RequestBody String userId) {
-    	System.out.println("getBorrowDetails:"+userId);
+    	logger.info("getBookingDetails invoked");
         List<Borrow> li = new ArrayList<Borrow>();        
         List<Object[]> res =borrowRepository.findByUSerId(userId);
 		Iterator<Object[]> it = res.iterator();
@@ -58,29 +62,17 @@ public class SearchController {
         return li;
     }
 
-
-    @RequestMapping(value = "/count", method = RequestMethod.GET, produces = "application/json")
-    @ApiOperation(value = "to get count of books", response = Long.class)
-    public long countNoofBooks() {
-        return bookRepository.count();
-    }
-
     @RequestMapping(value = "/addBook", method = RequestMethod.POST, produces = "application/json")
     @ApiOperation(value = "to add new book in library", response = String.class)
     public void addBooks(@RequestBody List<Book> books) {
-        System.out.println(books);
+    	logger.info("addBooks invoked");
         bookRepository.saveAll(books);
-
-
     }
 
     @RequestMapping(value = "/delBook", method = RequestMethod.POST, produces = "application/json")
     @ApiOperation(value = "to delete book from library", response = String.class)
     public void delBooks(@RequestBody List<Book> books) {
-        System.out.println(books);
         bookRepository.deleteAll(books);
-
-
     }
 
     @RequestMapping(value = "/borrowbooks", method = RequestMethod.POST,
@@ -96,10 +88,7 @@ public class SearchController {
             produces = "application/json")
     @ApiOperation(value = "to cancel booking from library", response = String.class)
     public void cancelBooking(@RequestBody String bookingDetails) {
-        System.out.println(bookingDetails.split(":")[0]);
         borrowRepository.deleteByBorrowerId(bookingDetails);
-
-
     }
 
 }

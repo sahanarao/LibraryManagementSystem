@@ -1,16 +1,17 @@
 package com.libmgmtsys.controller;
 
+import org.slf4j.Logger;
+
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class MainController {
-
-
-
+	private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 	@GetMapping("/Login")
 	public String getRequest() {
-		System.out.println("returning call from Login user....");
+		logger.info("Login method invoked");
 		return "login";
 	}
 
@@ -22,9 +23,7 @@ public class MainController {
 
 	@GetMapping("/search")
 	public String searchDetails() {
-		// logger.debug("Debug message");
-		System.out.println("In searchDetails");
-
+		logger.info("Search method invoked");
 		return "search";
 	}
 
