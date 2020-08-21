@@ -1,6 +1,5 @@
 package com.libmgmtsys;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.KeyManagementException;
@@ -25,6 +24,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 //import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -33,7 +33,10 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-//@EnableEurekaClient -Un comment this later
+import com.netflix.discovery.DiscoveryClient;
+import com.netflix.discovery.shared.transport.jersey.EurekaJerseyClientImpl.EurekaJerseyClientBuilder;
+
+@EnableEurekaClient
 @SpringBootApplication
 public class LibmgmgtsysApplication extends SpringBootServletInitializer {
 	@Bean
@@ -86,6 +89,7 @@ public class LibmgmgtsysApplication extends SpringBootServletInitializer {
 	    try {
 			sslContextBuilder.loadKeyMaterial(clientStore, "certpassword".toCharArray());
 			 sslContextBuilder.loadTrustMaterial(new TrustSelfSignedStrategy());
+			 
 		} catch (UnrecoverableKeyException | NoSuchAlgorithmException | KeyStoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -123,6 +127,23 @@ public class LibmgmgtsysApplication extends SpringBootServletInitializer {
         tomcat.addAdditionalTomcatConnectors(redirectConnector());
         return tomcat;
     }
+    
+    @Bean
+	public DiscoveryClient.DiscoveryClientOptionalArgs discoveryClientOptionalArgs() throws NoSuchAlgorithmException {
+		DiscoveryClient.DiscoveryClientOptionalArgs args = new DiscoveryClient.DiscoveryClientOptionalArgs();
+		System.setProperty("javax.net.ssl.keyStore", "src/main/resources/keystore/libmgmtsystem.p12");
+		System.setProperty("javax.net.ssl.keyStorePassword", "password123");
+		System.setProperty("javax.net.ssl.trustStore", "src/main/resources//keystore/libmgmtsystem.p12");
+		System.setProperty("javax.net.ssl.trustStorePassword", "password123");
+		EurekaJerseyClientBuilder builder = new EurekaJerseyClientBuilder();
+		builder.withClientName("client");
+		builder.withSystemSSLConfiguration();
+		builder.withMaxTotalConnections(10);
+		builder.withMaxConnectionsPerHost(10);
+		args.setEurekaJerseyClient(builder.build());
+		return args;
+	}
+
 
     private Connector redirectConnector() {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
